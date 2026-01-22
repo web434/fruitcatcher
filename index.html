@@ -79,7 +79,7 @@
         /* THE IMAGE FRUIT STYLE */
         .falling-fruit { 
             position: absolute; 
-            width: 120px; /* Size of the fruit image */
+            width: 120px; 
             height: 120px;
             object-fit: contain;
             user-select: none; 
@@ -106,6 +106,10 @@
     </style>
 </head>
 <body>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="start-screen">
         <h1>BABY HARVEST</h1>
@@ -140,17 +144,17 @@
         const lollipop = document.getElementById('lollipop');
         const scoreElement = document.getElementById('score');
         const timerElement = document.getElementById('timer');
+        const music = document.getElementById('bg-music');
         
         let score = 0;
         let timeLeft = 60;
         let gameActive = false;
 
-        // FRUIT IMAGE LINKS
         const fruitImages = [
-            'https://uploads.onecompiler.io/449rrkh4t/449umdwee/16.jfif', // Apple
-            'https://uploads.onecompiler.io/449rrkh4t/449umdwee/18.png', // Orange
-            'https://uploads.onecompiler.io/449rrkh4t/449uxmmz4/13.png', // Strawberry
-            'https://uploads.onecompiler.io/449rrkh4t/449uxmmz4/7.png'  // Watermelon
+            'https://uploads.onecompiler.io/449rrkh4t/449umdwee/16.jfif', 
+            'https://uploads.onecompiler.io/449rrkh4t/449umdwee/18.png', 
+            'https://uploads.onecompiler.io/449rrkh4t/449uxmmz4/13.png', 
+            'https://uploads.onecompiler.io/449rrkh4t/449uxmmz4/7.png'  
         ];
 
         function initGame() {
@@ -158,6 +162,11 @@
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('ui-layer').style.opacity = '1';
             canvas.style.display = 'block';
+
+            // PLAY THE MUSIC
+            music.volume = 0.3; // Set volume to 30%
+            music.play();
+
             spawnFruit();
             startTimer();
         }
@@ -173,16 +182,16 @@
         function spawnFruit() {
             if (!gameActive) return;
 
-            // 2. CREATE IMAGE ELEMENT INSTEAD OF TEXT
             const fruit = document.createElement('img');
             fruit.className = 'falling-fruit';
             fruit.src = fruitImages[Math.floor(Math.random() * fruitImages.length)];
             
-            fruit.style.left = Math.random() * (window.innerWidth - 60) + 'px';
-            fruit.style.top = '-70px';
+            // Adjust spawn area for 120px width
+            fruit.style.left = Math.random() * (window.innerWidth - 120) + 'px';
+            fruit.style.top = '-130px';
             canvas.appendChild(fruit);
 
-            let topPos = -70;
+            let topPos = -130;
             const fallSpeed = 3 + Math.random() * 4;
 
             const fallInterval = setInterval(() => {
@@ -193,7 +202,6 @@
                 const lollyRect = lollipop.getBoundingClientRect();
                 const fruitRect = fruit.getBoundingClientRect();
 
-                // Hitbox detection
                 if (fruitRect.bottom >= lollyRect.top && fruitRect.right >= lollyRect.left && 
                     fruitRect.left <= lollyRect.right && fruitRect.top <= (lollyRect.top + 70)) {
                     score++;
@@ -215,6 +223,7 @@
                 timerElement.innerText = timeLeft;
                 if (timeLeft <= 0) {
                     gameActive = false;
+                    music.pause(); // STOP MUSIC ON GAME OVER
                     document.getElementById('game-over').style.display = 'block';
                     document.getElementById('final-score').innerText = "Total Score: " + score;
                 }
